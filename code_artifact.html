@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>書香知音 | 讀書會心得分享與社交平台</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        book: {
+                            50: '#fcf8f2',
+                            100: '#f5ebe0',
+                            600: '#8c5830',
+                            700: '#6f4320',
+                            800: '#543216',
+                        },
+                        amberclub: {
+                            DEFAULT: '#d4a373',
+                            dark: '#bc8a5f'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #f4f6f8;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased flex flex-col min-h-screen">
+
+    <header class="sticky top-0 left-0 w-full bg-white border-b border-slate-200 shadow-sm z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-4 flex-1">
+                <a href="#" onclick="switchTab('feed')" class="flex items-center gap-2.5 text-book-700 font-extrabold text-xl tracking-wide">
+                    <div class="w-10 h-10 bg-book-600 text-white rounded-xl flex items-center justify-center text-xl shadow-md">
+                        <i class="fa-solid fa-book-open-reader"></i>
+                    </div>
+                    <span class="hidden sm:inline">書香知音</span>
+                </a>
+                <div class="relative max-w-xs w-full hidden md:block">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                        <i class="fa-solid fa-magnifying-glass text-sm"></i>
+                    </span>
+                    <input type="text" id="global-search" oninput="handleSearch(this.value)" placeholder="搜尋書名、作者、心得或標籤..." class="w-full bg-slate-100 border border-transparent rounded-full pl-10 pr-4 py-2 text-sm focus:bg-white focus:border-book-600 focus:outline-none transition">
+                </div>
+            </div>
+
+            <!-- Central Navigation Tabs -->
+            <nav class="hidden lg:flex items-center justify-center gap-2 flex-1">
+                <button onclick="switchTab('feed')" id="nav-btn-feed" class="flex items-center justify-center w-20 h-12 rounded-xl text-book-600 bg-book-50 font-bold text-xl transition hover:bg-book-100" title="動態牆">
+                    <i class="fa-solid fa-house"></i>
+                </button>
+                <button onclick="switchTab('topics')" id="nav-btn-topics" class="flex items-center justify-center w-20 h-12 rounded-xl text-slate-500 font-bold text-xl transition hover:bg-slate-100" title="話題牆">
+                    <i class="fa-solid fa-hashtag"></i>
+                </button>
+                <button onclick="switchTab('chat')" id="nav-btn-chat" class="flex items-center justify-center w-20 h-12 rounded-xl text-slate-500 font-bold text-xl transition hover:bg-slate-100 relative" title="聊天室">
+                    <i class="fa-solid fa-comments"></i>
+                    <span class="absolute top-2 right-5 w-2.5 h-2.5 bg-red-500 rounded-full"></span>
+                </button>
+                <button onclick="switchTab('friends')" id="nav-btn-friends" class="flex items-center justify-center w-20 h-12 rounded-xl text-slate-500 font-bold text-xl transition hover:bg-slate-100" title="好友列表">
+                    <i class="fa-solid fa-user-group"></i>
+                </button>
+                <button onclick="switchTab('profile')" id="nav-btn-profile" class="flex items-center justify-center w-20 h-12 rounded-xl text-slate-500 font-bold text-xl transition hover:bg-slate-100" title="個人主頁">
+                    <i class="fa-solid fa-id-badge"></i>
+                </button>
+            </nav>
+
+            <!-- Right Controls -->
+            <div class="flex items-center gap-3 justify-end flex-1">
+                <button onclick="switchTab('profile')" class="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-full transition">
+                    <img id="current-user-avatar-top" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" alt="頭像" class="w-7 h-7 rounded-full object-cover">
+                    <span id="current-user-name-top" class="text-sm font-semibold text-slate-700 hidden sm:inline">林書涵</span>
+                </button>
+                <button onclick="openNotificationModal()" class="w-10 h-10 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-full flex items-center justify-center transition relative">
+                    <i class="fa-solid fa-bell text-sm"></i>
+                    <span class="absolute top-2 right-2 w-2 h-2 bg-book-600 rounded-full"></span>
+                </button>
+                <button onclick="toggleMobileMenu()" class="lg:hidden text-slate-700 text-xl p-2 focus:outline-none">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Dropdown -->
+        <div id="mobile-menu" class="hidden lg:hidden bg-white border-t border-slate-200 px-4 py-3 shadow-lg flex flex-col gap-2">
+            <button onclick="switchTab('feed'); toggleMobileMenu();" class="flex items-center gap-3 px-4 py-2.5 rounded-xl font-medium text-slate-700 hover:bg-slate-100">
+                <i class="fa-solid fa-house text-book-600 w-6"></i> 動態牆
+            </button>
+            <button onclick="switchTab('topics'); toggleMobileMenu();" class="flex items-center gap-3 px-4 py-2.5 rounded-xl font-medium text-slate-700 hover:bg-slate-100">
+                <i class="fa-solid fa-hashtag text-book-600 w-6"></i> 話題牆
+            </button>
+            <button onclick="switchTab('chat'); toggleMobileMenu();" class="flex items-center gap-3 px-4 py-2.5 rounded-xl font-medium text-slate-700 hover:bg-slate-100">
+                <i class="fa-solid fa-comments text-book-600 w-6"></i> 讀書會聊天室
+            </button>
+            <button onclick="switchTab('friends'); toggleMobileMenu();" class="flex items-center gap-3 px-4 py-2.5 rounded-xl font-medium text-slate-700 hover:bg-slate-100">
+                <i class="fa-solid fa-user-group text-book-600 w-6"></i> 好友與書友
+            </button>
+            <button onclick="switchTab('profile'); toggleMobileMenu();" class="flex items-center gap-3 px-4 py-2.5 rounded-xl font-medium text-slate-700 hover:bg-slate-100">
+                <i class="fa-solid fa-id-badge text-book-600 w-6"></i> 個人檔案
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl mx-auto w-full px-2 sm:px-4 lg:px-8 py-6">
+
+        <!-- 1. Feed Tab -->
+        <div id="tab-feed" class="tab-content grid grid-cols-1 lg:grid-cols-4 gap-6">
+            <!-- Left Sidebar -->
+            <div class="hidden lg:block lg:col-span-1 space-y-4">
+                <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 sticky top-20">
+                    <h3 class="font-bold text-slate-700 mb-3 px-2">熱門標籤分類 (Tags)</h3>
+                    <div id="tag-filter-list" class="flex flex-col gap-1">
+                        <button onclick="filterByTag('全部')" class="tag-btn text-left px-3 py-2 rounded-xl text-sm font-semibold bg-book-50 text-book-700 transition flex items-center justify-between">
+                            <span><i class="fa-solid fa-fire text-amber-500 mr-2"></i> 全部動態</span>
+                            <span class="text-xs bg-book-200 px-2 py-0.5 rounded-full" id="count-all">6</span>
+                        </button>
+                        <button onclick="filterByTag('心理學')" class="tag-btn text-left px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 transition flex items-center justify-between">
+                            <span><i class="fa-solid fa-brain text-purple-500 mr-2"></i> #心理學</span>
+                            <span class="text-xs bg-slate-200 px-2 py-0.5 rounded-full">2</span>
+                        </button>
+                        <button onclick="filterByTag('商業理財')" class="tag-btn text-left px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 transition flex items-center justify-between">
+                            <span><i class="fa-solid fa-chart-line text-emerald-500 mr-2"></i> #商業理財</span>
+                            <span class="text-xs bg-slate-200 px-2 py-0.5 rounded-full">2</span>
+                        </button>
+                        <button onclick="filterByTag('文學小說')" class="tag-btn text-left px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 transition flex items-center justify-between">
+                            <span><i class="fa-solid fa-feather text-sky-500 mr-2"></i> #文學小說</span>
+                            <span class="text-xs bg-slate-200 px-2 py-0.5 rounded-full">1</span>
+                        </button>
+                        <button onclick="filterByTag('自我成長')" class="tag-btn text-left px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 transition flex items-center justify-between">
+                            <span><i class="fa-solid fa-seedling text-amber-600 mr-2"></i> #自我成長</span>
+                            <span class="text-xs bg-slate-200 px-2 py-0.5 rounded-full">1</span>
+                        </button>
+                    </div>
+
+                    <div class="mt-6 pt-4 border-t border-slate-100">
+                        <h4 class="font-bold text-slate-700 mb-2 px-2 text-xs uppercase tracking-wider text-slate-400">快速捷徑</h4>
+                        <a href="#" onclick="switchTab('topics')" class="flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-slate-600 hover:bg-slate-100 transition font-medium">
+                            <i class="fa-solid fa-hashtag text-book-600"></i> 熱門話題牆
+                        </a>
+                        <a href="#" onclick="switchTab('chat')" class="flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-slate-600 hover:bg-slate-100 transition font-medium">
+                            <i class="fa-solid fa-comments text-book-600"></i> 公開讀書會聊天室
+                        </a>
+                        <a href="#" onclick="switchTab('friends')" class="flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-slate-600 hover:bg-slate-100 transition font-medium">
+                            <i class="fa-solid fa-user-group text-book-600"></i> 尋找書友與追蹤
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Central Feed Stream -->
+            <div class="col-span-1 lg:col-span-2 space-y-6">
+                <!-- Post Creator Widget -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-5">
+                    <div class="flex items-center gap-3 pb-4 border-b border-slate-100">
+                        <img id="current-user-avatar-form" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" alt="頭像" class="w-11 h-11 rounded-full object-cover">
+                        <div class="flex-1 bg-slate-100 hover:bg-slate-200/70 rounded-full px-5 py-3 cursor-pointer text-slate-500 text-sm font-medium transition" onclick="openPostModal()">
+                            林書涵，跟大家分享今天讀了哪本好書或心得吧...
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between pt-3 px-2">
+                        <button onclick="openPostModal()" class="flex items-center gap-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 px-3 py-2 rounded-xl transition">
+                            <i class="fa-solid fa-book text-amber-600 text-lg"></i> 書籍心得
+                        </button>
+                        <button onclick="openPostModal()" class="flex items-center gap-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 px-3 py-2 rounded-xl transition">
+                            <i class="fa-solid fa-tags text-book-600 text-lg"></i> 新增 Tag 標籤
+                        </button>
+                        <button onclick="openPostModal()" class="flex items-center gap-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 px-3 py-2 rounded-xl transition">
+                            <i class="fa-solid fa-image text-emerald-600 text-lg"></i> 照片 / 封面
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between px-1">
+                    <h2 class="font-extrabold text-lg text-slate-800 flex items-center gap-2">
+                        <i class="fa-solid fa-stream text-book-600"></i> 動態牆心得分享 <span id="active-tag-label" class="text-xs bg-book-100 text-book-700 px-2.5 py-1 rounded-full font-bold">全部標籤</span>
+                    </h2>
+                    <div>
+                        <select id="sort-select" onchange="sortFeed(this.value)" class="bg-white border border-slate-200 text-slate-600 text-xs font-semibold px-3 py-2 rounded-xl focus:outline-none">
+                            <option value="latest">依發布時間排序</option>
+                            <option value="popular">依按讚數排序</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="posts-container" class="space-y-6"></div>
+            </div>
+
+            <!-- Right Sidebar Widgets -->
+            <div class="hidden lg:block lg:col-span-1 space-y-6">
+                <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 cursor-pointer hover:border-book-600 transition" onclick="switchTab('topics')">
+                    <h3 class="font-bold text-slate-800 mb-2 flex items-center justify-between">
+                        <span><i class="fa-solid fa-hashtag text-book-600 mr-2"></i> 話題牆精選</span>
+                        <span class="text-xs text-book-600 font-bold">查看全部 &rarr;</span>
+                    </h3>
+                    <p class="text-xs text-slate-500">探索各類閱讀話題，參與專屬領域的深度討論與書單交換。</p>
+                </div>
+
+                <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200">
+                    <h3 class="font-bold text-slate-800 mb-4 flex items-center justify-between">
+                        <span><i class="fa-solid fa-award text-amber-500 mr-2"></i> 本週熱門共讀書</span>
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50 transition cursor-pointer">
+                            <img src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=200&q=80" alt="書本" class="w-12 h-16 object-cover rounded-lg shadow">
+                            <div>
+                                <h4 class="font-bold text-sm text-slate-800 line-clamp-1">原子習慣</h4>
+                                <p class="text-xs text-slate-500">James Clear著</p>
+                                <span class="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-bold mt-1 inline-block">24人正在討論</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50 transition cursor-pointer">
+                            <img src="https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=200&q=80" alt="書本" class="w-12 h-16 object-cover rounded-lg shadow">
+                            <div>
+                                <h4 class="font-bold text-sm text-slate-800 line-clamp-1">被討厭的勇氣</h4>
+                                <p class="text-xs text-slate-500">岸見一郎著</p>
+                                <span class="text-[10px] bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-bold mt-1 inline-block">18人正在討論</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200">
+                    <h3 class="font-bold text-slate-800 mb-4 flex items-center justify-between">
+                        <span><i class="fa-solid fa-user-plus text-book-600 mr-2"></i> 推薦追蹤書友</span>
+                    </h3>
+                    <div id="suggested-friends-widget" class="space-y-3"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 1.5 Topics Wall Tab (New) -->
+        <div id="tab-topics" class="tab-content hidden space-y-6">
+            <div class="bg-gradient-to-r from-book-600 via-amber-700 to-amber-800 rounded-3xl p-6 sm:p-10 text-white shadow-lg relative overflow-hidden">
+                <div class="relative z-10 max-w-2xl">
+                    <span class="bg-white/20 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider backdrop-blur-md inline-block mb-3">
+                        <i class="fa-solid fa-hashtag mr-1"></i> 書香知音主題探索
+                    </span>
+                    <h1 class="text-2xl sm:text-4xl font-black">探索熱門閱讀話題牆</h1>
+                    <p class="text-slate-100 text-sm sm:text-base mt-2 leading-relaxed">
+                        點擊下方任一主題專區，深入瀏覽專屬的書單推薦、討論串與志同道合的閱讀夥伴！
+                    </p>
+                </div>
+                <div class="absolute right-[-20px] bottom-[-20px] text-white/10 text-9xl pointer-events-none">
+                    <i class="fa-solid fa-compass"></i>
+                </div>
+            </div>
+
+            <div id="topics-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+
+            <!-- Detailed Topic View Section (Shown when clicking a topic) -->
+            <div id="topic-detail-view" class="hidden space-y-6 pt-4 border-t border-slate-200">
+                <div class="flex items-center justify-between bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+                    <div class="flex items-center gap-4">
+                        <div id="detail-topic-icon-wrap" class="w-14 h-14 rounded-2xl flex items-center justify-center text-white text-2xl shadow">
+                            <i id="detail-topic-icon" class="fa-solid fa-brain"></i>
+                        </div>
+                        <div>
+                            <h2 id="detail-topic-title" class="text-xl sm:text-2xl font-black text-slate-900">#心理學</h2>
+                            <p id="detail-topic-desc" class="text-xs sm:text-sm text-slate-500 mt-1">探索人類心智、行為模式與自我覺察的經典與新書分享。</p>
+                        </div>
+                    </div>
+                    <button onclick="closeTopicDetail()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-xl text-sm font-semibold transition flex items-center gap-2">
+                        <i class="fa-solid fa-arrow-left"></span> 返回話題牆
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2 space-y-4">
+                        <h3 class="font-extrabold text-lg text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-stream text-book-600"></i> 該話題下的所有心得貼文
+                        </h3>
+                        <div id="topic-posts-container" class="space-y-4"></div>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200">
+                            <h4 class="font-bold text-slate-800 mb-3">話題熱門統計</h4>
+                            <ul class="space-y-3 text-sm text-slate-600">
+                                <li class="flex justify-between"><span>討論貼文數：</span><strong id="stat-posts-count" class="text-book-600">2 篇</strong></li>
+                                <li class="flex justify-between"><span>參與書友數：</span><strong class="text-slate-900">32 位</strong></li>
+                                <li class="flex justify-between"><span>推薦好書數：</span><strong class="text-slate-900">5 本</strong></li>
+                            </ul>
+                            <button onclick="switchTab('chat')" class="w-full mt-5 bg-book-600 hover:bg-book-700 text-white font-bold py-2.5 rounded-xl text-sm transition shadow">
+                                <i class="fa-solid fa-comments mr-1"></i> 加入該話題讀書聊天室
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Chat Tab -->
+        <div id="tab-chat" class="tab-content hidden grid-cols-1 lg:grid-cols-4 gap-6 h-[calc(100vh-8rem)]">
+            <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 flex flex-col lg:col-span-1">
+                <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
+                    <h3 class="font-extrabold text-slate-800 text-lg">讀書會聊天室</h3>
+                    <button onclick="openNewChatModal()" class="text-xs bg-book-600 text-white font-bold px-3 py-1.5 rounded-xl hover:bg-book-700 transition">
+                        <i class="fa-solid fa-plus mr-1"></i> 新聊天
+                    </button>
+                </div>
+                <div id="chat-room-list" class="flex-1 overflow-y-auto space-y-2 pr-1"></div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 flex flex-col lg:col-span-3 overflow-hidden">
+                <div class="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+                    <div class="flex items-center gap-3">
+                        <div id="active-chat-icon" class="w-10 h-10 bg-book-600 text-white rounded-xl flex items-center justify-center font-bold text-lg shadow">
+                            <i class="fa-solid fa-globe"></i>
+                        </div>
+                        <div>
+                            <h4 id="active-chat-title" class="font-bold text-slate-800">全站公開讀書會大廳</h4>
+                            <p id="active-chat-desc" class="text-xs text-slate-500">線上 12 位書友正在熱烈討論中</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button class="w-9 h-9 bg-white border border-slate-200 rounded-xl flex items-center justify-center text-slate-600 hover:bg-slate-100 transition" title="搜尋聊天紀錄">
+                            <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="chat-messages-container" class="flex-1 p-4 sm:p-6 overflow-y-auto space-y-4 bg-slate-50/50"></div>
+
+                <div class="p-3 sm:p-4 bg-white border-t border-slate-200 flex items-center gap-3">
+                    <button class="text-slate-400 hover:text-slate-600 p-2 text-xl transition"><i class="fa-solid fa-face-smile"></i></button>
+                    <button class="text-slate-400 hover:text-slate-600 p-2 text-xl transition"><i class="fa-solid fa-paperclip"></i></button>
+                    <input type="text" id="chat-input" onkeypress="handleChatKeyPress(event)" placeholder="輸入想與書友交流的心得或訊息..." class="flex-1 bg-slate-100 border border-transparent rounded-full px-5 py-3 text-sm focus:bg-white focus:border-book-600 focus:outline-none transition">
+                    <button onclick="sendChatMessage()" class="bg-book-600 hover:bg-book-700 text-white w-11 h-11 rounded-full flex items-center justify-center shadow-md transition transform active:scale-95">
+                        <i class="fa-solid fa-paper-plane text-sm"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Friends Tab -->
+        <div id="tab-friends" class="tab-content hidden space-y-6">
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                    <div>
+                        <h2 class="font-extrabold text-2xl text-slate-800">書友社交圈與追蹤管理</h2>
+                        <p class="text-slate-500 text-sm mt-1">結交志同道合的閱讀夥伴，追蹤他們的最新讀書心得與書單推薦。</p>
+                    </div>
+                    <div class="flex gap-2 w-full sm:w-auto">
+                        <button onclick="switchFriendTab('all')" id="btn-friend-all" class="flex-1 sm:flex-none px-4 py-2 rounded-xl text-sm font-bold bg-book-600 text-white transition">所有書友</button>
+                        <button onclick="switchFriendTab('following')" id="btn-friend-following" class="flex-1 sm:flex-none px-4 py-2 rounded-xl text-sm font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">已追蹤</button>
+                    </div>
+                </div>
+
+                <div id="friends-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+            </div>
+        </div>
+
+        <!-- 4. Profile Tab -->
+        <div id="tab-profile" class="tab-content hidden space-y-6">
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="h-48 sm:h-72 bg-gradient-to-r from-book-600 via-amber-700 to-amber-800 relative">
+                    <button onclick="editCoverModal()" class="absolute bottom-4 right-4 bg-black/40 hover:bg-black/60 text-white px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold backdrop-blur-md transition flex items-center gap-2">
+                        <i class="fa-solid fa-camera"></i> 編輯封面相片
+                    </button>
+                </div>
+                <div class="px-6 sm:px-10 pb-6 relative">
+                    <div class="flex flex-col sm:flex-row justify-between items-center sm:items-end gap-6 -mt-16 sm:-mt-20 mb-6">
+                        <div class="flex flex-col sm:flex-row items-center sm:items-end gap-6 text-center sm:text-left">
+                            <img id="profile-user-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80" alt="頭像" class="w-32 h-32 sm:w-40 sm:h-40 rounded-full border-4 border-white shadow-xl object-cover">
+                            <div class="mb-2">
+                                <h1 id="profile-user-name" class="font-black text-2xl sm:text-3xl text-slate-900">林書涵</h1>
+                                <p id="profile-user-bio" class="text-slate-500 text-sm mt-1 max-w-md">熱愛心理學與商業理財的終身學習者 📚 | 每年目標閱讀 50 本好書 | 歡迎交流分享！</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-3">
+                            <button onclick="openEditProfileModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-5 py-2.5 rounded-xl font-semibold text-sm transition flex items-center gap-2">
+                                <i class="fa-solid fa-pen"></i> 編輯個人檔案
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex border-t border-slate-200 pt-4 gap-6 font-semibold text-sm text-slate-600">
+                        <button class="text-book-600 border-b-2 border-book-600 pb-2 -mb-4">個人貼文與心得 (<span id="profile-post-count">0</span>)</button>
+                        <button class="hover:text-book-600 pb-2 -mb-4 transition">收藏書單</button>
+                        <button class="hover:text-book-600 pb-2 -mb-4 transition">閱讀成就</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="space-y-6">
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 space-y-4">
+                        <h3 class="font-bold text-slate-800 text-lg">關於我</h3>
+                        <ul class="space-y-3 text-sm text-slate-600">
+                            <li class="flex items-center gap-3"><i class="fa-solid fa-book-bookmark text-book-600 w-5"></i> <span>已閱讀 <strong>32</strong> 本年度好書</span></li>
+                            <li class="flex items-center gap-3"><i class="fa-solid fa-user-group text-book-600 w-5"></i> <span>追蹤 <strong id="profile-following-count">3</strong> 位書友</span></li>
+                            <li class="flex items-center gap-3"><i class="fa-solid fa-location-dot text-book-600 w-5"></i> <span>來自 台灣台北市</span></li>
+                            <li class="flex items-center gap-3"><i class="fa-solid fa-calendar text-book-600 w-5"></i> <span>於 2025 年 1 月加入書香知音</span></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-2 space-y-6">
+                    <div id="profile-posts-container" class="space-y-6"></div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Post Creator Modal -->
+    <div id="post-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden p-4">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-200">
+            <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-4">
+                <h3 class="font-black text-xl text-slate-800">建立讀書心得貼文</h3>
+                <button onclick="closePostModal()" class="w-9 h-9 bg-slate-100 hover:bg-slate-200 rounded-full flex items-center justify-center text-slate-500 transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-4">
+                <div class="flex items-center gap-3">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" alt="頭像" class="w-10 h-10 rounded-full object-cover">
+                    <div>
+                        <h4 class="font-bold text-sm text-slate-800">林書涵</h4>
+                        <span class="text-xs bg-book-100 text-book-700 px-2 py-0.5 rounded-full font-semibold">公開貼文</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <input type="text" id="post-book-title" placeholder="書名 (例如：原子習慣)" class="bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-book-600">
+                    <input type="text" id="post-book-author" placeholder="作者 (例如：James Clear)" class="bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-book-600">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-1.5 uppercase">選擇主題標籤 (Tag)</label>
+                    <select id="post-tag-select" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-book-600 font-medium">
+                        <option value="心理學">#心理學</option>
+                        <option value="商業理財">#商業理財</option>
+                        <option value="文學小說">#文學小說</option>
+                        <option value="自我成長">#自我成長</option>
+                    </select>
+                </div>
+
+                <div>
+                    <textarea id="post-content-input" rows="5" placeholder="分享這本書最觸動你的觀點、金句或讀後感..." class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-sm focus:outline-none focus:border-book-600 resize-none"></textarea>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-bold text-slate-500 uppercase">書籍評分：</span>
+                    <div id="star-rating-picker" class="flex gap-1 text-amber-500 text-lg cursor-pointer">
+                        <i class="fa-solid fa-star" onclick="setRating(1)"></i>
+                        <i class="fa-solid fa-star" onclick="setRating(2)"></i>
+                        <i class="fa-solid fa-star" onclick="setRating(3)"></i>
+                        <i class="fa-solid fa-star" onclick="setRating(4)"></i>
+                        <i class="fa-solid fa-star" onclick="setRating(5)"></i>
+                    </div>
+                </div>
+
+                <button onclick="submitNewPost()" class="w-full bg-book-600 hover:bg-book-700 text-white font-bold py-3.5 rounded-xl shadow-md transition transform active:scale-98 text-base">
+                    發布心得貼文
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Chat Modal -->
+    <div id="new-chat-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200">
+            <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-4">
+                <h3 class="font-black text-xl text-slate-800">開啟新私人聊天室</h3>
+                <button onclick="closeNewChatModal()" class="w-9 h-9 bg-slate-100 hover:bg-slate-200 rounded-full flex items-center justify-center text-slate-500 transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="space-y-4">
+                <p class="text-sm text-slate-600">選擇想與之暢談心得的書友：</p>
+                <div id="chat-friend-selection-list" class="space-y-2 max-h-60 overflow-y-auto"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Modal -->
+    <div id="notification-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200">
+            <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-4">
+                <h3 class="font-black text-xl text-slate-800">通知中心</h3>
+                <button onclick="closeNotificationModal()" class="w-9 h-9 bg-slate-100 hover:bg-slate-200 rounded-full flex items-center justify-center text-slate-500 transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="space-y-3">
+                <div class="flex items-center gap-3 p-3 bg-book-50 rounded-2xl">
+                    <div class="w-10 h-10 bg-book-600 text-white rounded-full flex items-center justify-center font-bold">
+                        <i class="fa-solid fa-heart"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-semibold text-slate-800">王曉明 對你的貼文《原子習慣》按了讚</p>
+                        <span class="text-xs text-slate-400">10 分鐘前</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-2xl">
+                    <div class="w-10 h-10 bg-emerald-600 text-white rounded-full flex items-center justify-center font-bold">
+                        <i class="fa-solid fa-user-plus"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-semibold text-slate-800">陳雅婷 開始追蹤了你</p>
+                        <span class="text-xs text-slate-400">1 小時前</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div id="edit-profile-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200">
+            <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-4">
+                <h3 class="font-black text-xl text-slate-800">編輯個人檔案</h3>
+                <button onclick="closeEditProfileModal()" class="w-9 h-9 bg-slate-100 hover:bg-slate-200 rounded-full flex items-center justify-center text-slate-500 transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-1">暱稱</label>
+                    <input type="text" id="edit-name-input" value="林書涵" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-book-600">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-1">頭像圖片網址</label>
+                    <input type="text" id="edit-avatar-input" value="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-book-600">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-1">個人簡介</label>
+                    <textarea id="edit-bio-input" rows="3" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:border-book-600 resize-none">熱愛心理學與商業理財的終身學習者 📚 | 每年目標閱讀 50 本好書 | 歡迎交流分享！</textarea>
+                </div>
+                <button onclick="saveProfileChanges()" class="w-full bg-book-600 hover:bg-book-700 text-white font-bold py-3 rounded-xl transition shadow">
+                    儲存變更
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Application State Data
+        let currentUser = {
+            name: "林書涵",
+            avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80",
+            bio: "熱愛心理學與商業理財的終身學習者 📚 | 每年目標閱讀 50 本好書 | 歡迎交流分享！"
+        };
+
+        let currentRating = 5;
+
+        // Topics Data Definition
+        let topicsData = [
+            {
+                name: "心理學",
+                slug: "心理學",
+                icon: "fa-brain",
+                color: "bg-purple-600",
+                lightColor: "bg-purple-50 text-purple-700 border-purple-200",
+                desc: "探索人類心智、認知偏誤、阿德勒心理學與自我覺察的殿堂。",
+                booksCount: 12,
+                postsCount: 2,
+                featuredBook: "被討厭的勇氣"
+            },
+            {
+                name: "商業理財",
+                slug: "商業理財",
+                icon: "fa-chart-line",
+                color: "bg-emerald-600",
+                lightColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
+                desc: "從致富心態、宏觀經濟到複利效應，建立正確的金錢觀與商業思維。",
+                booksCount: 18,
+                postsCount: 2,
+                featuredBook: "致富心態"
+            },
+            {
+                name: "自我成長",
+                slug: "自我成長",
+                icon: "fa-seedling",
+                color: "bg-amber-600",
+                lightColor: "bg-amber-50 text-amber-700 border-amber-200",
+                desc: "原子習慣、晨間儀式與生產力提升的實戰技巧與心得分享。",
+                booksCount: 24,
+                postsCount: 1,
+                featuredBook: "原子習慣"
+            },
+            {
+                name: "文學小說",
+                slug: "文學小說",
+                icon: "fa-feather",
+                color: "bg-sky-600",
+                lightColor: "bg-sky-50 text-sky-700 border-sky-200",
+                desc: "走入散文、詩集與精采小說的世界，細品文字背後的情感與故事。",
+                booksCount: 15,
+                postsCount: 1,
+                featuredBook: "百年孤寂"
+            }
+        ];
+
+        let posts = [
+            {
+                id: 1,
+                author: "王曉明",
+                avatar: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=150&q=80",
+                time: "2 小時前",
+                bookTitle: "原子習慣",
+                bookAuthor: "James Clear",
+                tag: "自我成長",
+                rating: 5,
+                content: "「你不需要一次變得更好，你只需要每天進步 1%。」這本書徹底改變了我的晨間儀式。透過把習慣堆疊（Habit Stacking），我現在每天固定閱讀 30 分鐘，推薦給所有想建立好習慣的朋友！",
+                likes: 24,
+                likedByMe: true,
+                comments: [
+                    { author: "林書涵", text: "真的！我也超推習慣堆疊的技巧！" },
+                    { author: "陳雅婷", text: "馬上加入待讀書單！" }
+                ]
+            },
+            {
+                id: 2,
+                author: "陳雅婷",
+                avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=150&q=80",
+                time: "5 小時前",
+                bookTitle: "被討厭的勇氣",
+                bookAuthor: "岸見一郎",
+                tag: "心理學",
+                rating: 5,
+                content: "阿德勒心理學真的是當代人的心靈良藥。所謂的自由，就是被別人討厭的勇氣。不必把所有人的期待都扛在自己肩上，學會課題分離，生活輕鬆太多了。",
+                likes: 19,
+                likedByMe: false,
+                comments: []
+            },
+            {
+                id: 3,
+                author: "林書涵",
+                avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80",
+                time: "昨天",
+                bookTitle: "快思慢想",
+                bookAuthor: "Daniel Kahneman",
+                tag: "心理學",
+                rating: 4,
+                content: "系統1（直覺式思考）與系統2（邏輯式思考）的交織影響了我們每天的大多數決策。讀完這本讓我更覺察自己的盲點與認知偏誤。",
+                likes: 31,
+                likedByMe: true,
+                comments: [
+                    { author: "王曉明", text: "這本經典真的值得讀兩遍以上！" }
+                ]
+            },
+            {
+                id: 4,
+                author: "張偉民",
+                avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80",
+                time: "2 天前",
+                bookTitle: "致富心態",
+                bookAuthor: "Morgan Housel",
+                tag: "商業理財",
+                rating: 5,
+                content: "理財不只是數學問題，更是心理學與行為習慣。致富與守財往往需要完全不同的心態。強烈推薦這本給所有想建立正確金錢觀的讀者。",
+                likes: 42,
+                likedByMe: false,
+                comments: []
+            }
+        ];
+
+        let friends = [
+            { id: 1, name: "王曉明", avatar: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=150&q=80", bio: "專注於生產力工具與自我成長書籍分享", following: true, booksRead: 45 },
+            { id: 2, name: "陳雅婷", avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=150&q=80", bio: "心理學與文學小說愛好者", following: true, booksRead: 38 },
+            { id: 3, name: "張偉民", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80", bio: "創投人，熱愛商業理財與宏觀經濟", following: true, booksRead: 52 },
+            { id: 4, name: "李心怡", avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80", bio: "獨立書店志工，散文與詩集收藏者", following: false, booksRead: 29 },
+            { id: 5, name: "趙柏翰", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80", bio: "科技產業從業人員，熱愛科幻與科普書", following: false, booksRead: 34 }
+        ];
+
+        let chatRooms = [
+            { id: 'public', name: '全站公開讀書會大廳', desc: '線上 12 位書友正在熱烈討論中', icon: 'fa-globe', type: 'public', unread: 0 },
+            { id: 'atomic', name: '《原子習慣》共讀討論室', desc: '討論養成好習慣的實戰技巧', icon: 'fa-book', type: 'room', unread: 2 },
+            { id: 'psych', name: '心理學深度交流坊', desc: '探索阿德勒與快思慢想', icon: 'fa-brain', type: 'room', unread: 0 },
+            { id: 'chat_1', name: '王曉明', desc: '聊聊原子習慣的心得...', icon: 'fa-user', type: 'dm', unread: 0 },
+            { id: 'chat_2', name: '陳雅婷', desc: '這週末要一起線上讀書嗎？', icon: 'fa-user', type: 'dm', unread: 1 }
+        ];
+
+        let currentActiveChat = 'public';
+        let activeTagFilter = '全部';
+        let currentFriendTab = 'all';
+        let searchQuery = '';
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderFeed();
+            renderTopicsWall();
+            renderChatRooms();
+            renderChatMessages();
+            renderFriends();
+            renderSuggestedFriends();
+            renderProfilePosts();
+        });
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById('tab-' + tabId).classList.remove('hidden');
+
+            ['feed', 'topics', 'chat', 'friends', 'profile'].forEach(t => {
+                const btn = document.getElementById('nav-btn-' + t);
+                if (btn) {
+                    if (t === tabId) {
+                        btn.className = "flex items-center justify-center w-20 h-12 rounded-xl text-book-600 bg-book-50 font-bold text-xl transition hover:bg-book-100";
+                    } else {
+                        btn.className = "flex items-center justify-center w-20 h-12 rounded-xl text-slate-500 font-bold text-xl transition hover:bg-slate-100";
+                    }
+                }
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        function renderTopicsWall() {
+            const grid = document.getElementById('topics-grid');
+            if (!grid) return;
+            grid.innerHTML = '';
+
+            topicsData.forEach(topic => {
+                const card = document.createElement('div');
+                card.className = "bg-white rounded-2xl p-6 shadow-sm border border-slate-200 hover:border-book-600 transition flex flex-col justify-between space-y-4 cursor-pointer";
+                card.onclick = () => openTopicDetail(topic.slug);
+                card.innerHTML = `
+                    <div class="flex items-start justify-between">
+                        <div class="flex items-center gap-4">
+                            <div class="w-14 h-14 ${topic.color} text-white rounded-2xl flex items-center justify-center text-xl shadow-md">
+                                <i class="fa-solid ${topic.icon}"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-black text-xl text-slate-900">#${topic.name}</h3>
+                                <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full ${topic.lightColor} inline-block mt-1">精選話題專區</span>
+                            </div>
+                        </div>
+                        <span class="text-xs text-slate-400 font-semibold">${topic.postsCount} 篇心得</span>
+                    </div>
+                    <p class="text-slate-600 text-sm leading-relaxed">${topic.desc}</p>
+                    <div class="flex items-center justify-between pt-3 border-t border-slate-100 text-xs font-semibold text-slate-500">
+                        <span><i class="fa-solid fa-book-bookmark text-book-600 mr-1"></i> 代表書籍：${topic.featuredBook}</span>
+                        <span class="text-book-600 group-hover:underline flex items-center gap-1 font-bold">進入專區 <i class="fa-solid fa-arrow-right"></i></span>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function openTopicDetail(topicSlug) {
+            const topic = topicsData.find(t => t.slug === topicSlug);
+            if (!topic) return;
+
+            document.getElementById('topics-grid').classList.add('hidden');
+            document.getElementById('topic-detail-view').classList.remove('hidden');
+
+            document.getElementById('detail-topic-title').innerText = '#' + topic.name;
+            document.getElementById('detail-topic-desc').innerText = topic.desc;
+            document.getElementById('detail-topic-icon').className = "fa-solid " + topic.icon;
+            document.getElementById('detail-topic-icon-wrap').className = "w-14 h-14 rounded-2xl flex items-center justify-center text-white text-2xl shadow " + topic.color;
+
+            const filteredPosts = posts.filter(p => p.tag === topic.name);
+            document.getElementById('stat-posts-count').innerText = filteredPosts.length + ' 篇';
+
+            const container = document.getElementById('topic-posts-container');
+            container.innerHTML = '';
+
+            if (filteredPosts.length === 0) {
+                container.innerHTML = `<div class="bg-white rounded-2xl p-8 text-center text-slate-400 shadow-sm border border-slate-200">此話題目前尚無貼文，快來發布第一篇心得吧！</div>`;
+                return;
+            }
+
+            filteredPosts.forEach(post => {
+                let starsHTML = '';
+                for (let i = 1; i <= 5; i++) {
+                    starsHTML += `<i class="fa-solid fa-star ${i <= post.rating ? 'text-amber-500' : 'text-slate-200'} text-xs"></i>`;
+                }
+
+                const postEl = document.createElement('div');
+                postEl.className = "bg-white rounded-2xl p-5 shadow-sm border border-slate-200 space-y-4";
+                postEl.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <img src="${post.avatar}" alt="作者頭像" class="w-11 h-11 rounded-full object-cover">
+                            <div>
+                                <h4 class="font-bold text-slate-900 text-sm">${post.author}</h4>
+                                <span class="text-xs text-slate-400">${post.time}</span>
+                            </div>
+                        </div>
+                        <span class="text-xs bg-book-100 text-book-700 px-3 py-1 rounded-full font-bold">#${post.tag}</span>
+                    </div>
+
+                    <div class="bg-slate-50 border border-slate-200/60 rounded-2xl p-3.5 flex items-center gap-4">
+                        <div class="w-12 h-16 bg-book-200 rounded-lg flex items-center justify-center text-book-700 font-bold shadow text-lg">
+                            <i class="fa-solid fa-book"></i>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <h5 class="font-bold text-slate-800 text-base">${post.bookTitle}</h5>
+                                <div class="flex">${starsHTML}</div>
+                            </div>
+                            <p class="text-xs text-slate-500 mt-0.5">作者：${post.bookAuthor}</p>
+                        </div>
+                    </div>
+
+                    <p class="text-slate-700 text-sm leading-relaxed">${post.content}</p>
+
+                    <div class="flex items-center justify-between pt-2 border-t border-slate-100 text-xs text-slate-500">
+                        <span class="flex items-center gap-1"><i class="fa-solid fa-heart text-red-500"></i> ${post.likes} 人按讚</span>
+                        <span>${post.comments.length} 則回應</span>
+                    </div>
+                `;
+                container.appendChild(postEl);
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function closeTopicDetail() {
+            document.getElementById('topic-detail-view').classList.add('hidden');
+            document.getElementById('topics-grid').classList.remove('hidden');
+        }
+
+        function renderFeed() {
+            const container = document.getElementById('posts-container');
+            container.innerHTML = '';
+
+            let filtered = posts.filter(p => {
+                const matchesTag = activeTagFilter === '全部' || p.tag === activeTagFilter;
+                const matchesSearch = searchQuery === '' || 
+                    p.bookTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    p.bookAuthor.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    p.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    p.author.toLowerCase().includes(searchQuery.toLowerCase());
+                return matchesTag && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<div class="bg-white rounded-2xl p-8 text-center text-slate-400 shadow-sm border border-slate-200">找不到符合條件的讀書心得貼文。</div>`;
+                return;
+            }
+
+            filtered.forEach(post => {
+                let starsHTML = '';
+                for (let i = 1; i <= 5; i++) {
+                    starsHTML += `<i class="fa-solid fa-star ${i <= post.rating ? 'text-amber-500' : 'text-slate-200'} text-xs"></i>`;
+                }
+
+                let commentsHTML = '';
+                post.comments.forEach(c => {
+                    commentsHTML += `
+                        <div class="bg-slate-50 rounded-xl px-3 py-2 text-xs text-slate-700 flex items-start gap-2">
+                            <span class="font-bold text-slate-900">${c.author}:</span>
+                            <span class="flex-1">${c.text}</span>
+                        </div>
+                    `;
+                });
+
+                const postEl = document.createElement('div');
+                postEl.className = "bg-white rounded-2xl p-5 shadow-sm border border-slate-200 space-y-4";
+                postEl.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <img src="${post.avatar}" alt="作者頭像" class="w-11 h-11 rounded-full object-cover">
+                            <div>
+                                <h4 class="font-bold text-slate-900 text-sm">${post.author}</h4>
+                                <span class="text-xs text-slate-400">${post.time}</span>
+                            </div>
+                        </div>
+                        <span class="text-xs bg-book-100 text-book-700 px-3 py-1 rounded-full font-bold">#${post.tag}</span>
+                    </div>
+
+                    <!-- Book Card Header inside post -->
+                    <div class="bg-slate-50 border border-slate-200/60 rounded-2xl p-3.5 flex items-center gap-4">
+                        <div class="w-12 h-16 bg-book-200 rounded-lg flex items-center justify-center text-book-700 font-bold shadow text-lg">
+                            <i class="fa-solid fa-book"></i>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <h5 class="font-bold text-slate-800 text-base">${post.bookTitle}</h5>
+                                <div class="flex">${starsHTML}</div>
+                            </div>
+                            <p class="text-xs text-slate-500 mt-0.5">作者：${post.bookAuthor}</p>
+                        </div>
+                    </div>
+
+                    <p class="text-slate-700 text-sm leading-relaxed">${post.content}</p>
+
+                    <div class="flex items-center justify-between pt-2 border-t border-slate-100 text-xs text-slate-500">
+                        <span class="flex items-center gap-1"><i class="fa-solid fa-heart text-red-500"></i> ${post.likes} 人按讚</span>
+                        <span>${post.comments.length} 則書友回應</span>
+                    </div>
+
+                    <div class="flex items-center gap-2 pt-1">
+                        <button onclick="toggleLike(${post.id})" class="flex-1 py-2 rounded-xl text-xs font-semibold ${post.likedByMe ? 'bg-red-50 text-red-600' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'} transition flex items-center justify-center gap-2">
+                            <i class="fa-${post.likedByMe ? 'solid' : 'regular'} fa-heart"></i> ${post.likedByMe ? '已按讚' : '讚'}
+                        </button>
+                        <button onclick="document.getElementById('comment-input-${post.id}').focus()" class="flex-1 py-2 rounded-xl text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition flex items-center justify-center gap-2">
+                            <i class="fa-regular fa-comment"></i> 回應心得
+                        </button>
+                    </div>
+
+                    ${commentsHTML.length > 0 ? `<div class="space-y-2 pt-2">${commentsHTML}</div>` : ''}
+
+                    <div class="flex items-center gap-2 pt-2">
+                        <input type="text" id="comment-input-${post.id}" placeholder="寫下你的回應與交流..." onkeypress="handleCommentKeyPress(event, ${post.id})" class="flex-1 bg-slate-100 border border-transparent rounded-full px-4 py-2 text-xs focus:bg-white focus:border-book-600 focus:outline-none transition">
+                        <button onclick="submitComment(${post.id})" class="bg-book-600 text-white px-4 py-2 rounded-full text-xs font-bold hover:bg-book-700 transition">發布</button>
+                    </div>
+                `;
+                container.appendChild(postEl);
+            });
+        }
+
+        function filterByTag(tag) {
+            activeTagFilter = tag;
+            document.getElementById('active-tag-label').innerText = '#' + tag;
+            renderFeed();
+        }
+
+        function sortFeed(sortBy) {
+            if (sortBy === 'popular') {
+                posts.sort((a, b) => b.likes - a.likes);
+            } else {
+                posts.sort((a, b) => b.id - a.id);
+            }
+            renderFeed();
+        }
+
+        function toggleLike(postId) {
+            const p = posts.find(item => item.id === postId);
+            if (p) {
+                if (p.likedByMe) {
+                    p.likes--;
+                    p.likedByMe = false;
+                } else {
+                    p.likes++;
+                    p.likedByMe = true;
+                }
+                renderFeed();
+                renderProfilePosts();
+            }
+        }
+
+        function submitComment(postId) {
+            const input = document.getElementById('comment-input-' + postId);
+            if (!input || !input.value.trim()) return;
+
+            const p = posts.find(item => item.id === postId);
+            if (p) {
+                p.comments.push({ author: currentUser.name, text: input.value.trim() });
+                input.value = '';
+                renderFeed();
+                renderProfilePosts();
+            }
+        }
+
+        function handleCommentKeyPress(e, postId) {
+            if (e.key === 'Enter') {
+                submitComment(postId);
+            }
+        }
+
+        function renderChatRooms() {
+            const list = document.getElementById('chat-room-list');
+            list.innerHTML = '';
+
+            chatRooms.forEach(room => {
+                const isActive = room.id === currentActiveChat;
+                const item = document.createElement('div');
+                item.className = `p-3 rounded-2xl flex items-center justify-between cursor-pointer transition ${isActive ? 'bg-book-50 border border-book-200' : 'hover:bg-slate-100'}`;
+                item.onclick = () => selectChatRoom(room.id);
+                item.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 ${isActive ? 'bg-book-600 text-white' : 'bg-slate-200 text-slate-600'} rounded-xl flex items-center justify-center font-bold shadow-sm">
+                            <i class="fa-solid ${room.icon}"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-sm text-slate-800 line-clamp-1">${room.name}</h4>
+                            <p class="text-xs text-slate-500 line-clamp-1">${room.desc}</p>
+                        </div>
+                    </div>
+                    ${room.unread > 0 ? `<span class="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">${room.unread}</span>` : ''}
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        function selectChatRoom(roomId) {
+            currentActiveChat = roomId;
+            const room = chatRooms.find(r => r.id === roomId);
+            if (room) {
+                room.unread = 0;
+                document.getElementById('active-chat-title').innerText = room.name;
+                document.getElementById('active-chat-desc').innerText = room.desc;
+                document.getElementById('active-chat-icon').innerHTML = `<i class="fa-solid ${room.icon}"></i>`;
+            }
+            renderChatRooms();
+            renderChatMessages();
+        }
+
+        function renderChatMessages() {
+            const container = document.getElementById('chat-messages-container');
+            container.innerHTML = '';
+
+            const msgs = chatMessages[currentActiveChat] || [];
+            msgs.forEach(m => {
+                const isMe = m.isMe || m.sender === currentUser.name;
+                const msgDiv = document.createElement('div');
+                msgDiv.className = `flex flex-col ${isMe ? 'items-end' : 'items-start'} space-y-1`;
+                msgDiv.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-bold text-slate-600">${m.sender}</span>
+                        <span class="text-[10px] text-slate-400">${m.time}</span>
+                    </div>
+                    <div class="max-w-xs sm:max-w-md px-4 py-3 rounded-2xl text-sm ${isMe ? 'bg-book-600 text-white rounded-br-none shadow-md' : 'bg-white text-slate-800 border border-slate-200 rounded-bl-none shadow-sm'}">
+                        ${m.text}
+                    </div>
+                `;
+                container.appendChild(msgDiv);
+            });
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function sendChatMessage() {
+            const input = document.getElementById('chat-input');
+            const text = input.value.trim();
+            if (!text) return;
+
+            if (!chatMessages[currentActiveChat]) {
+                chatMessages[currentActiveChat] = [];
+            }
+
+            const now = new Date();
+            const timeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+
+            chatMessages[currentActiveChat].push({
+                sender: currentUser.name,
+                text: text,
+                time: timeStr,
+                isMe: true
+            });
+
+            input.value = '';
+            renderChatMessages();
+
+            // Simulate automatic friendly response in public/dm rooms
+            setTimeout(() => {
+                let responder = "王曉明";
+                if (currentActiveChat === 'chat_2') responder = "陳雅婷";
+                if (currentActiveChat === 'psych') responder = "李心怡";
+
+                chatMessages[currentActiveChat].push({
+                    sender: responder,
+                    text: "完全贊同！這觀點真的讓人很有啟發。👍",
+                    time: timeStr,
+                    isMe: false
+                });
+                renderChatMessages();
+            }, 1200);
+        }
+
+        function handleChatKeyPress(e) {
+            if (e.key === 'Enter') {
+                sendChatMessage();
+            }
+        }
+
+        function renderFriends() {
+            const grid = document.getElementById('friends-grid');
+            grid.innerHTML = '';
+
+            let filtered = friends.filter(f => {
+                if (currentFriendTab === 'following') return f.following;
+                return true;
+            });
+
+            filtered.forEach(friend => {
+                const card = document.createElement('div');
+                card.className = "bg-white rounded-2xl p-5 shadow-sm border border-slate-200 flex flex-col justify-between space-y-4";
+                card.innerHTML = `
+                    <div class="flex items-center gap-4">
+                        <img src="${friend.avatar}" alt="頭像" class="w-14 h-14 rounded-full object-cover shadow">
+                        <div>
+                            <h4 class="font-bold text-slate-900 text-base">${friend.name}</h4>
+                            <p class="text-xs text-slate-500 mt-0.5">本年度已讀 ${friend.booksRead} 本書</p>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-600 line-clamp-2">${friend.bio}</p>
+                    <div class="flex items-center gap-2 pt-2 border-t border-slate-100">
+                        <button onclick="toggleFollow(${friend.id})" class="flex-1 py-2 rounded-xl text-xs font-bold ${friend.following ? 'bg-slate-100 text-slate-700 hover:bg-slate-200' : 'bg-book-600 text-white hover:bg-book-700'} transition">
+                            ${friend.following ? '已追蹤' : '追蹤書友'}
+                        </button>
+                        <button onclick="startDirectChat(${friend.id})" class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">
+                            <i class="fa-solid fa-comments"></i>
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function switchFriendTab(tab) {
+            currentFriendTab = tab;
+            if (tab === 'all') {
+                document.getElementById('btn-friend-all').className = "flex-1 sm:flex-none px-4 py-2 rounded-xl text-sm font-bold bg-book-600 text-white transition";
+                document.getElementById('btn-friend-following').className = "flex-1 sm:flex-none px-4 py-2 rounded-xl text-sm font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition";
+            } else {
+                document.getElementById('btn-friend-following').className = "flex-1 sm:flex-none px-4 py-2 rounded-xl text-sm font-bold bg-book-600 text-white transition";
+                document.getElementById('btn-friend-all').className = "flex-1 sm:flex-none px-4 py-2 rounded-xl text-sm font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition";
+            }
+            renderFriends();
+        }
+
+        function toggleFollow(friendId) {
+            const f = friends.find(item => item.id === friendId);
+            if (f) {
+                f.following = !f.following;
+                renderFriends();
+                renderSuggestedFriends();
+                updateFollowingCount();
+            }
+        }
+
+        function updateFollowingCount() {
+            const count = friends.filter(f => f.following).length;
+            const el = document.getElementById('profile-following-count');
+            if (el) el.innerText = count;
+        }
+
+        function renderSuggestedFriends() {
+            const container = document.getElementById('suggested-friends-widget');
+            if (!container) return;
+            container.innerHTML = '';
+
+            const notFollowing = friends.filter(f => !f.following).slice(0, 3);
+            notFollowing.forEach(f => {
+                const div = document.createElement('div');
+                div.className = "flex items-center justify-between";
+                div.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <img src="${f.avatar}" alt="頭像" class="w-10 h-10 rounded-full object-cover">
+                        <div>
+                            <h5 class="font-bold text-xs text-slate-800">${f.name}</h5>
+                            <span class="text-[10px] text-slate-400">共同好友推薦</span>
+                        </div>
+                    </div>
+                    <button onclick="toggleFollow(${f.id})" class="text-xs bg-book-50 text-book-700 font-bold px-3 py-1.5 rounded-xl hover:bg-book-100 transition">追蹤</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function startDirectChat(friendId) {
+            const f = friends.find(item => item.id === friendId);
+            if (f) {
+                const roomId = 'chat_' + f.id;
+                const exists = chatRooms.find(r => r.id === roomId);
+                if (!exists) {
+                    chatRooms.push({ id: roomId, name: f.name, desc: f.bio, icon: 'fa-user', type: 'dm', unread: 0 });
+                }
+                switchTab('chat');
+                selectChatRoom(roomId);
+            }
+        }
+
+        function renderProfilePosts() {
+            const container = document.getElementById('profile-posts-container');
+            if (!container) return;
+            container.innerHTML = '';
+
+            const myPosts = posts.filter(p => p.author === currentUser.name);
+            const countEl = document.getElementById('profile-post-count');
+            if (countEl) countEl.innerText = myPosts.length;
+
+            if (myPosts.length === 0) {
+                container.innerHTML = `<div class="bg-white rounded-2xl p-8 text-center text-slate-400 shadow-sm border border-slate-200">您尚未發布任何讀書心得貼文。</div>`;
+                return;
+            }
+
+            myPosts.forEach(post => {
+                let starsHTML = '';
+                for (let i = 1; i <= 5; i++) {
+                    starsHTML += `<i class="fa-solid fa-star ${i <= post.rating ? 'text-amber-500' : 'text-slate-200'} text-xs"></i>`;
+                }
+
+                const postEl = document.createElement('div');
+                postEl.className = "bg-white rounded-2xl p-5 shadow-sm border border-slate-200 space-y-4";
+                postEl.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <img src="${currentUser.avatar}" alt="作者頭像" class="w-11 h-11 rounded-full object-cover">
+                            <div>
+                                <h4 class="font-bold text-slate-900 text-sm">${currentUser.name}</h4>
+                                <span class="text-xs text-slate-400">${post.time}</span>
+                            </div>
+                        </div>
+                        <span class="text-xs bg-book-100 text-book-700 px-3 py-1 rounded-full font-bold">#${post.tag}</span>
+                    </div>
+
+                    <div class="bg-slate-50 border border-slate-200/60 rounded-2xl p-3.5 flex items-center gap-4">
+                        <div class="w-12 h-16 bg-book-200 rounded-lg flex items-center justify-center text-book-700 font-bold shadow text-lg">
+                            <i class="fa-solid fa-book"></i>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <h5 class="font-bold text-slate-800 text-base">${post.bookTitle}</h5>
+                                <div class="flex">${starsHTML}</div>
+                            </div>
+                            <p class="text-xs text-slate-500 mt-0.5">作者：${post.bookAuthor}</p>
+                        </div>
+                    </div>
+
+                    <p class="text-slate-700 text-sm leading-relaxed">${post.content}</p>
+
+                    <div class="flex items-center justify-between pt-2 border-t border-slate-100 text-xs text-slate-500">
+                        <span class="flex items-center gap-1"><i class="fa-solid fa-heart text-red-500"></i> ${post.likes} 人按讚</span>
+                        <span>${post.comments.length} 則回應</span>
+                    </div>
+                `;
+                container.appendChild(postEl);
+            });
+        }
+
+        function openPostModal() {
+            document.getElementById('post-modal').classList.remove('hidden');
+        }
+
+        function closePostModal() {
+            document.getElementById('post-modal').classList.add('hidden');
+        }
+
+        function setRating(r) {
+            currentRating = r;
+            const stars = document.querySelectorAll('#star-rating-picker i');
+            stars.forEach((star, index) => {
+                if (index < r) {
+                    star.className = "fa-solid fa-star text-amber-500";
+                } else {
+                    star.className = "fa-solid fa-star text-slate-200";
+                }
+            });
+        }
+
+        function submitNewPost() {
+            const titleInput = document.getElementById('post-book-title');
+            const authorInput = document.getElementById('post-book-author');
+            const contentInput = document.getElementById('post-content-input');
+            const tagSelect = document.getElementById('post-tag-select');
+
+            if (!titleInput.value.trim() || !contentInput.value.trim()) {
+                alert("請填寫書名與心得內容！");
+                return;
+            }
+
+            const newPost = {
+                id: posts.length + 1,
+                author: currentUser.name,
+                avatar: currentUser.avatar,
+                time: "剛剛",
+                bookTitle: titleInput.value.trim(),
+                bookAuthor: authorInput.value.trim() || "未知作者",
+                tag: tagSelect.value,
+                rating: currentRating,
+                content: contentInput.value.trim(),
+                likes: 0,
+                likedByMe: false,
+                comments: []
+            };
+
+            posts.unshift(newPost);
+            titleInput.value = '';
+            authorInput.value = '';
+            contentInput.value = '';
+            closePostModal();
+
+            renderFeed();
+            renderProfilePosts();
+        }
+
+        function openNewChatModal() {
+            document.getElementById('new-chat-modal').classList.remove('hidden');
+            const list = document.getElementById('chat-friend-selection-list');
+            list.innerHTML = '';
+
+            friends.forEach(f => {
+                const div = document.createElement('div');
+                div.className = "flex items-center justify-between p-2 hover:bg-slate-50 rounded-xl cursor-pointer transition";
+                div.onclick = () => {
+                    closeNewChatModal();
+                    startDirectChat(f.id);
+                };
+                div.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <img src="${f.avatar}" alt="頭像" class="w-9 h-9 rounded-full object-cover">
+                        <div>
+                            <h5 class="font-bold text-sm text-slate-800">${f.name}</h5>
+                            <p class="text-xs text-slate-400">${f.bio}</p>
+                        </div>
+                    </div>
+                    <span class="text-xs bg-book-50 text-book-700 font-bold px-3 py-1.5 rounded-xl">開始聊天</span>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function closeNewChatModal() {
+            document.getElementById('new-chat-modal').classList.add('hidden');
+        }
+
+        function openNotificationModal() {
+            document.getElementById('notification-modal').classList.remove('hidden');
+        }
+
+        function closeNotificationModal() {
+            document.getElementById('notification-modal').classList.add('hidden');
+        }
+
+        function openEditProfileModal() {
+            document.getElementById('edit-profile-modal').classList.remove('hidden');
+            document.getElementById('edit-name-input').value = currentUser.name;
+            document.getElementById('edit-avatar-input').value = currentUser.avatar;
+            document.getElementById('edit-bio-input').value = currentUser.bio;
+        }
+
+        function closeEditProfileModal() {
+            document.getElementById('edit-profile-modal').classList.add('hidden');
+        }
+
+        function saveProfileChanges() {
+            const name = document.getElementById('edit-name-input').value.trim();
+            const avatar = document.getElementById('edit-avatar-input').value.trim();
+            const bio = document.getElementById('edit-bio-input').value.trim();
+
+            if (!name) return;
+
+            currentUser.name = name;
+            currentUser.avatar = avatar || currentUser.avatar;
+            currentUser.bio = bio;
+
+            document.getElementById('current-user-name-top').innerText = name;
+            document.getElementById('current-user-avatar-top').src = currentUser.avatar;
+            document.getElementById('current-user-avatar-form').src = currentUser.avatar;
+            document.getElementById('profile-user-name').innerText = name;
+            document.getElementById('profile-user-avatar').src = currentUser.avatar;
+            document.getElementById('profile-user-bio').innerText = bio;
+
+            closeEditProfileModal();
+            renderFeed();
+            renderProfilePosts();
+        }
+
+        function editCoverModal() {
+            alert("封面相片編輯功能已開啟，您可以上傳喜愛的書香背景圖片！");
+        }
+
+        function handleSearch(val) {
+            searchQuery = val.trim();
+            renderFeed();
+        }
+    </script>
+</body>
+</html>
