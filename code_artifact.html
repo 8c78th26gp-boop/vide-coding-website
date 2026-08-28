@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>書香知音｜讀書會心得分享、書友交流與作品集展示</title>
+    <meta name="description" content="書香知音是專為繁體中文讀者打造的讀書會心得分享與書友交流平台，提供閱讀心得、話題討論、聊天室、個人作品集展示。">
+    <meta name="keywords" content="書香知音,讀書會,閱讀心得,書評分享,書友交流,閱讀社群,作品集展示,鞋款作品">
+    <meta name="author" content="書香知音">
+    <link rel="canonical" href="https://8c78th26gp-boop.github.io/vide-coding-website/reading-club.html">
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@graph": [
+            {
+                "@type": "Organization",
+                "@id": "https://8c78th26gp-boop.github.io/vide-coding-website/#organization",
+                "name": "書香知音",
+                "url": "https://8c78th26gp-boop.github.io/vide-coding-website/",
+                "description": "書香知音是繁體中文讀者的讀書會心得分享、書友交流與閱讀社群平台。"
+            },
+            {
+                "@type": "Person",
+                "@id": "https://8c78th26gp-boop.github.io/vide-coding-website/reading-club.html#person-lin-shuhan",
+                "name": "林書涵",
+                "description": "書香知音示範使用者，熱愛心理學與商業理財的終身學習者。",
+                "knowsAbout": ["心理學", "商業理財", "自我成長", "讀書會", "閱讀心得"]
+            },
+            {
+                "@type": "WebSite",
+                "@id": "https://8c78th26gp-boop.github.io/vide-coding-website/#website",
+                "url": "https://8c78th26gp-boop.github.io/vide-coding-website/",
+                "name": "書香知音",
+                "inLanguage": "zh-Hant"
+            }
+        ]
+    }
+    </script>
+
+    <script>
+        tailwind = {
+            config: {
+                theme: {
+                    extend: {
+                        colors: {
+                            book: {
+                                50: '#fcf8f2',
+                                100: '#f5ebe0',
+                                200: '#e6d0bb',
+                                600: '#8c5830',
+                                700: '#6f4320',
+                                800: '#543216',
+                            },
+                            amberclub: {
+                                DEFAULT: '#d4a373',
+                                dark: '#bc8a5f'
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+
+    <style>
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #f4f6f8;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        /* YouTube Shorts Pure Frame Styling */
+        .shorts-frame-wrapper {
+            position: relative;
+            width: 100%;
+            padding-bottom: 177.77%; /* 9:16 Aspect Ratio */
+            height: 0;
+            overflow: hidden;
+            border-radius: 1.25rem;
+            background-color: #000;
+        }
+        .shorts-frame-wrapper iframe {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 130%; /* Zoom slightly to remove YouTube black bars/borders */
+            height: 130%;
+            transform: translate(-50%, -50%);
+            pointer-events: none; /* Disable all interactive popups/buttons for pure video playback */
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased flex flex-col min-h-screen">
+
+    <header class="sticky top-0 left-0 w-full bg-white border-b border-slate-200 shadow-sm z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3 sm:gap-4 flex-1">
+                <a href="#" onclick="switchTab('feed')" aria-label="回到書香知音動態牆首頁" class="flex items-center gap-2.5 text-book-700 font-extrabold text-xl tracking-wide">
+                    <div class="w-10 h-10 bg-book-600 text-white rounded-xl flex items-center justify-center text-xl shadow-md">
+                        <i class="fa-solid fa-book-open-reader"></i>
+                    </div>
+                    <span class="hidden sm:inline">書香知音</span>
+                </a>
+                <div class="relative max-w-xs w-full hidden md:block">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500">
+                        <i class="fa-solid fa-magnifying-glass text-sm"></i>
+                    </span>
+                    <input type="text" id="global-search" aria-label="搜尋書名作者心得或標籤" oninput="handleSearch(this.value)" placeholder="搜尋書名、作者、心得或標籤..." class="w-full bg-slate-100 border border-transparent rounded-full pl-10 pr-4 py-2 text-sm focus:bg-white focus:border-book-600 focus:outline-none transition">
+                </div>
+            </div>
+
+            <!-- Central Navigation Tabs -->
+            <nav class="hidden lg:flex items-center justify-center gap-2 flex-1">
+                <button onclick="switchTab('feed')" id="nav-btn-feed" aria-label="切換到動態牆" class="flex items-center justify-center w-20 h-12 rounded-xl text-book-600 bg-book-50 font-bold text-xl transition hover:bg-book-100" title="動態牆">
+                    <i class="fa-solid fa-house"></i>
+                </button>
+                <button onclick="switchTab('topics')" id="nav-btn-topics" aria-label="切換到話題牆" class="flex items-center justify-center w-20 h-12 rounded-xl text-slate-500 font-bold text-xl transition hover:bg-slate-100" title="話題牆">
+                    <i class="fa-solid fa-hashtag"></i>
+                </button>
+                <button onclick="switchTab('chat')" id="nav-btn-chat" aria-label="切換到聊天室" class="flex items-center justify-center w-20 h-12 rounded-xl text-slate-500 font-bold text-xl transition hover:bg-slate-100 relative" title="聊天室">
+                    <i class="fa-solid fa-comments"></i>
+                    <span class="absolute top-2 right-5 w-2.5 h-2.5 bg-red-500 rounded-full" aria-hidden="true"></span>
+                </button>
+                <button onclick="switchTab('friends')" id="nav-btn-friends" aria-label="切換到好友列表" class="flex items-center justify-center w-20 h-12 rounded-xl text-slate-500 font-bold text-xl transition hover:bg-slate-100" title="好友列表">
+                    <i class="fa-solid fa-user-group"></i>
+                </button>
+                <button onclick="switchTab('profile')" id="nav-btn-profile" aria-label="切換到個人主頁" class="flex items-center justify-center w-20 h-12 rounded-xl text-slate-500 font-bold text-xl transition hover:bg-slate-100" title="個人主頁">
+                    <i class="fa-solid fa-id-badge"></i>
+                </button>
+            </nav>
+
+            <!-- Right Controls -->
+            <div class="flex items-center gap-3 justify-end flex-1">
+                <button onclick="switchTab('profile')" aria-label="開啟個人主頁" class="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-full transition">
+                    <img loading="lazy" id="current-user-avatar-top" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" alt="林書涵的個人頭像" class="w-7 h-7 rounded-full object-cover">
+                    <span id="current-user-name-top" class="text-sm font-semibold text-slate-700 hidden sm:inline">林書涵</span>
+                </button>
+                <button onclick="openNotificationModal()" aria-label="開啟通知中心" class="w-10 h-10 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-full flex items-center justify-center transition relative">
+                    <i class="fa-solid fa-bell text-sm"></i>
+                    <span class="absolute top-2 right-2 w-2 h-2 bg-book-600 rounded-full" aria-hidden="true"></span>
+                </button>
+                <button onclick="toggleMobileMenu()" aria-label="開啟行動版選單" class="lg:hidden text-slate-700 text-xl p-2 focus:outline-none">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Dropdown -->
+        <div id="mobile-menu" class="hidden lg:hidden bg-white border-t border-slate-200 px-4 py-3 shadow-lg flex flex-col gap-2">
+            <button onclick="switchTab('feed'); toggleMobileMenu();" class="flex items-center gap-3 px-4 py-2.5 rounded-xl font-medium text-slate-700 hover:bg-slate-100">
+                <i class="fa-solid fa-house text-book-600 w-6"></i> 動態牆
+            </button>
+            <button onclick="switchTab('topics'); toggleMobileMenu();" class="flex items-center gap-3 px-4 py-2.5 rounded-xl font-medium text-slate-700 hover:bg-slate-100">
+                <i class="fa-solid fa-hashtag text-book-600 w-6"></i> 話題牆
+            </button>
+            <button onclick="switchTab('chat'); toggleMobileMenu();" class="flex items-center gap-3 px-4 py-2.5 rounded-xl font-medium text-slate-700 hover:bg-slate-100">
+                <i class="fa-solid fa-comments text-book-600 w-6"></i> 讀書會聊天室
+            </button>
+            <button onclick="switchTab('friends'); toggleMobileMenu();" class="flex items-center gap-3 px-4 py-2.5 rounded-xl font-medium text-slate-700 hover:bg-slate-100">
+                <i class="fa-solid fa-user-group text-book-600 w-6"></i> 好友與書友
+            </button>
+            <button onclick="switchTab('profile'); toggleMobileMenu();" class="flex items-center gap-3 px-4 py-2.5 rounded-xl font-medium text-slate-700 hover:bg-slate-100">
+                <i class="fa-solid fa-id-badge text-book-600 w-6"></i> 個人檔案
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl mx-auto w-full px-3 sm:px-4 lg:px-8 py-4 sm:py-6">
+
+        <!-- AI GEO Summary Section -->
+        <section id="geo-summary" class="bg-white rounded-2xl sm:rounded-3xl shadow-sm border border-slate-200 p-4 sm:p-6 lg:p-8 mb-6 space-y-5" aria-labelledby="geo-summary-title">
+            <div class="space-y-3">
+                <span class="inline-flex items-center gap-2 bg-book-50 text-book-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                    <i class="fa-solid fa-sparkles" aria-hidden="true"></i> AI 搜尋友善摘要
+                </span>
+                <h1 id="geo-summary-title" class="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 leading-tight break-words">書香知音：繁體中文讀書會心得分享、書友交流與閱讀社群平台</h1>
+                <p class="text-slate-700 text-sm sm:text-base leading-relaxed">
+                    <strong>結論先行：</strong>書香知音協助讀者快速發布閱讀心得、加入主題讀書會、追蹤同好書友，並用結構化的話題分類整理心理學、商業理財、自我成長與文學小說等閱讀知識。
+                </p>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5">
+                <section aria-labelledby="core-services-title" class="bg-slate-50 border border-slate-200 rounded-2xl p-4 sm:p-5">
+                    <h2 id="core-services-title" class="text-lg font-extrabold text-slate-900 mb-3">核心服務與可引用重點</h2>
+                    <ul class="space-y-2 text-sm text-slate-700 list-disc pl-5">
+                        <li><strong>閱讀心得分享：</strong>以書名、作者、評分、標籤與留言整理讀後感。</li>
+                        <li><strong>主題話題牆：</strong>聚合心理學、商業理財、自我成長、文學小說等高意圖閱讀主題。</li>
+                        <li><strong>讀書會聊天室：</strong>支援公開討論與私人書友交流，強化社群互動。</li>
+                        <li><strong>好友追蹤與個人檔案：</strong>呈現年度閱讀量、書單收藏、追蹤關係與個人簡介。</li>
+                    </ul>
+                </section>
+                <section aria-labelledby="faq-summary-title" class="bg-book-50 border border-book-100 rounded-2xl p-4 sm:p-5">
+                    <h2 id="faq-summary-title" class="text-lg font-extrabold text-slate-900 mb-3">常見問題摘要</h2>
+                    <div class="space-y-3 text-sm text-slate-700">
+                        <article>
+                            <h3 class="font-bold text-slate-900">書香知音適合誰？</h3>
+                            <p>適合繁體中文讀者、讀書會成員、書評創作者與想尋找同好交流的終身學習者。</p>
+                        </article>
+                        <article>
+                            <h3 class="font-bold text-slate-900">本頁的主要實體是什麼？</h3>
+                            <p>主要實體包含書香知音、讀書會、閱讀心得、書友交流、閱讀社群、書單管理與主題討論。</p>
+                        </article>
+                    </div>
+                </section>
+            </div>
+        </section>
+
+        <!-- 1. Feed Tab -->
+        <div id="tab-feed" class="tab-content grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6">
+            <!-- Left Sidebar -->
+            <div class="hidden lg:block lg:col-span-1 space-y-4">
+                <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 sticky top-20">
+                    <h3 class="font-bold text-slate-700 mb-3 px-2">熱門標籤分類 (Tags)</h3>
+                    <div id="tag-filter-list" class="flex flex-col gap-1">
+                        <button onclick="filterByTag('全部')" class="tag-btn text-left px-3 py-2 rounded-xl text-sm font-semibold bg-book-50 text-book-700 transition flex items-center justify-between">
+                            <span><i class="fa-solid fa-fire text-amber-500 mr-2"></i> 全部動態</span>
+                            <span class="text-xs bg-book-200 px-2 py-0.5 rounded-full" id="count-all">3</span>
+                        </button>
+                        <button onclick="filterByTag('心理學')" class="tag-btn text-left px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 transition flex items-center justify-between">
+                            <span><i class="fa-solid fa-brain text-purple-500 mr-2"></i> #心理學</span>
+                            <span class="text-xs bg-slate-200 px-2 py-0.5 rounded-full">1</span>
+                        </button>
+                        <button onclick="filterByTag('商業理財')" class="tag-btn text-left px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 transition flex items-center justify-between">
+                            <span><i class="fa-solid fa-chart-line text-emerald-500 mr-2"></i> #商業理財</span>
+                            <span class="text-xs bg-slate-200 px-2 py-0.5 rounded-full">1</span>
+                        </button>
+                        <button onclick="filterByTag('自我成長')" class="tag-btn text-left px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 transition flex items-center justify-between">
+                            <span><i class="fa-solid fa-seedling text-amber-600 mr-2"></i> #自我成長</span>
+                            <span class="text-xs bg-slate-200 px-2 py-0.5 rounded-full">1</span>
+                        </button>
+                    </div>
+
+                    <div class="mt-6 pt-4 border-t border-slate-100">
+                        <h4 class="font-bold text-slate-700 mb-2 px-2 text-xs uppercase tracking-wider text-slate-500">快速捷徑</h4>
+                        <a href="#" onclick="switchTab('topics')" class="flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-slate-600 hover:bg-slate-100 transition font-medium">
+                            <i class="fa-solid fa-hashtag text-book-600"></i> 熱門話題牆
+                        </a>
+                        <a href="#" onclick="switchTab('chat')" class="flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-slate-600 hover:bg-slate-100 transition font-medium">
+                            <i class="fa-solid fa-comments text-book-600"></i> 公開讀書會聊天室
+                        </a>
+                        <a href="#" onclick="switchTab('friends')" class="flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-slate-600 hover:bg-slate-100 transition font-medium">
+                            <i class="fa-solid fa-user-group text-book-600"></i> 尋找書友與追蹤
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Central Feed Stream -->
+            <div class="col-span-1 lg:col-span-2 space-y-6">
+                <!-- Post Creator Widget -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-3 sm:p-5">
+                    <div class="flex items-start sm:items-center gap-3 pb-4 border-b border-slate-100">
+                        <img loading="lazy" id="current-user-avatar-form" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" alt="林書涵的個人頭像" class="w-11 h-11 rounded-full object-cover">
+                        <button type="button" class="flex-1 bg-slate-100 hover:bg-slate-200/70 rounded-2xl sm:rounded-full px-4 sm:px-5 py-3 cursor-pointer text-slate-700 text-sm font-medium transition text-left" onclick="openPostModal()" aria-label="開啟建立讀書心得貼文視窗">
+                            林書涵，跟大家分享今天讀了哪本好書或心得吧...
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-3 px-0 sm:px-2">
+                        <button onclick="openPostModal()" class="flex items-center justify-center sm:justify-start gap-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 px-3 py-2 rounded-xl transition">
+                            <i class="fa-solid fa-book text-amber-600 text-lg"></i> 書籍心得
+                        </button>
+                        <button onclick="openPostModal()" class="flex items-center justify-center sm:justify-start gap-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 px-3 py-2 rounded-xl transition">
+                            <i class="fa-solid fa-tags text-book-600 text-lg"></i> 新增 Tag 標籤
+                        </button>
+                        <button onclick="openPostModal()" class="flex items-center justify-center sm:justify-start gap-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 px-3 py-2 rounded-xl transition">
+                            <i class="fa-solid fa-image text-emerald-600 text-lg"></i> 照片 / 封面
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-1">
+                    <h2 class="font-extrabold text-lg text-slate-800 flex flex-wrap items-center gap-2">
+                        <i class="fa-solid fa-stream text-book-600"></i> 動態牆心得分享 <span id="active-tag-label" class="text-xs bg-book-100 text-book-700 px-2.5 py-1 rounded-full font-bold">全部標籤</span>
+                    </h2>
+                    <div>
+                        <select id="sort-select" aria-label="排序動態牆心得貼文" onchange="sortFeed(this.value)" class="bg-white border border-slate-200 text-slate-600 text-xs font-semibold px-3 py-2 rounded-xl focus:outline-none">
+                            <option value="latest">依發布時間排序</option>
+                            <option value="popular">依按讚數排序</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="posts-container" class="space-y-6"></div>
+            </div>
+
+            <!-- Right Sidebar Widgets -->
+            <div class="hidden lg:block lg:col-span-1 space-y-6">
+                <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 cursor-pointer hover:border-book-600 transition" onclick="switchTab('topics')">
+                    <h3 class="font-bold text-slate-800 mb-2 flex items-center justify-between">
+                        <span><i class="fa-solid fa-hashtag text-book-600 mr-2"></i> 話題牆精選</span>
+                        <span class="text-xs text-book-600 font-bold">查看全部 &rarr;</span>
+                    </h3>
+                    <p class="text-xs text-slate-500">探索各類閱讀話題，參與專屬領域的深度討論與書單交換。</p>
+                </div>
+
+                <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200">
+                    <h3 class="font-bold text-slate-800 mb-4 flex items-center justify-between">
+                        <span><i class="fa-solid fa-award text-amber-500 mr-2"></i> 本週熱門共讀書</span>
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50 transition cursor-pointer">
+                            <img loading="lazy" src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=200&q=80" alt="熱門共讀書籍封面" class="w-12 h-16 object-cover rounded-lg shadow">
+                            <div>
+                                <h4 class="font-bold text-sm text-slate-800 line-clamp-1">原子習慣</h4>
+                                <p class="text-xs text-slate-500">James Clear著</p>
+                                <span class="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-bold mt-1 inline-block">24人正在討論</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50 transition cursor-pointer">
+                            <img loading="lazy" src="https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=200&q=80" alt="熱門共讀書籍封面" class="w-12 h-16 object-cover rounded-lg shadow">
+                            <div>
+                                <h4 class="font-bold text-sm text-slate-800 line-clamp-1">被討厭的勇氣</h4>
+                                <p class="text-xs text-slate-500">岸見一郎著</p>
+                                <span class="text-[10px] bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-bold mt-1 inline-block">18人正在討論</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Topics Wall Tab -->
+        <div id="tab-topics" class="tab-content hidden space-y-6">
+            <div class="bg-gradient-to-r from-book-600 via-amber-700 to-amber-800 rounded-3xl p-6 sm:p-10 text-white shadow-lg relative overflow-hidden">
+                <div class="relative z-10 max-w-2xl">
+                    <span class="bg-white/20 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider backdrop-blur-md inline-block mb-3">
+                        <i class="fa-solid fa-hashtag mr-1"></i> 書香知音主題探索
+                    </span>
+                    <h2 class="text-2xl sm:text-4xl font-black">探索熱門閱讀話題牆</h2>
+                    <p class="text-slate-100 text-sm sm:text-base mt-2 leading-relaxed">
+                        點擊下方任一主題專區，深入瀏覽專屬的書單推薦、討論串與志同道合的閱讀夥伴！
+                    </p>
+                </div>
+                <div class="absolute right-[-20px] bottom-[-20px] text-white/20 text-9xl pointer-events-none">
+                    <i class="fa-solid fa-compass"></i>
+                </div>
+            </div>
+
+            <div id="topics-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6"></div>
+        </div>
+
+        <!-- 3. Chat Tab -->
+        <div id="tab-chat" class="tab-content hidden grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6 min-h-[70vh] lg:h-[calc(100vh-8rem)]">
+            <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 flex flex-col lg:col-span-1 min-h-[18rem]">
+                <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
+                    <h3 class="font-extrabold text-slate-800 text-lg">讀書會聊天室</h3>
+                    <button onclick="openNewChatModal()" class="text-xs bg-book-600 text-white font-bold px-3 py-1.5 rounded-xl hover:bg-book-700 transition">
+                        <i class="fa-solid fa-plus mr-1"></i> 新聊天
+                    </button>
+                </div>
+                <div id="chat-room-list" class="flex-1 overflow-y-auto space-y-2 pr-1"></div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 flex flex-col lg:col-span-3 overflow-hidden">
+                <div class="p-3 sm:p-4 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-slate-50">
+                    <div class="flex items-center gap-3">
+                        <div id="active-chat-icon" class="w-10 h-10 bg-book-600 text-white rounded-xl flex items-center justify-center font-bold text-lg shadow">
+                            <i class="fa-solid fa-globe"></i>
+                        </div>
+                        <div>
+                            <h4 id="active-chat-title" class="font-bold text-slate-800">全站公開讀書會大廳</h4>
+                            <p id="active-chat-desc" class="text-xs text-slate-500">線上 12 位書友正在熱烈討論中</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="chat-messages-container" class="flex-1 p-4 sm:p-6 overflow-y-auto space-y-4 bg-slate-50/50 min-h-[300px]"></div>
+
+                <div class="p-3 sm:p-4 bg-white border-t border-slate-200 flex items-center gap-2">
+                    <button aria-label="選擇表情符號" class="text-slate-600 hover:text-slate-800 p-2 text-xl transition"><i class="fa-solid fa-face-smile"></i></button>
+                    <button aria-label="附加檔案" class="text-slate-600 hover:text-slate-800 p-2 text-xl transition"><i class="fa-solid fa-paperclip"></i></button>
+                    <input type="text" id="chat-input" placeholder="輸入訊息..." class="bg-slate-100 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-book-600 w-full" onkeypress="handleChatKeyPress(event)">
+                    <button onclick="sendMessage()" aria-label="發送訊息" class="bg-book-600 hover:bg-book-700 text-white w-9 h-9 rounded-full flex items-center justify-center transition shrink-0"><i class="fa-solid fa-paper-plane text-sm"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. Friends Tab -->
+        <div id="tab-friends" class="tab-content hidden space-y-6">
+            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+                <h3 class="text-xl font-bold text-slate-900 mb-4"><i class="fa-solid fa-user-group text-book-600 mr-2"></i> 我的好友與推薦書友</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4" id="friends-card-grid"></div>
+            </div>
+        </div>
+
+        <!-- 5. Profile Tab -->
+        <div id="tab-profile" class="tab-content hidden space-y-6">
+            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col md:flex-row items-center gap-6">
+                <img loading="lazy" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80" alt="林書涵" class="w-24 h-24 rounded-full object-cover shadow-md border-2 border-book-600">
+                <div class="space-y-2 text-center md:text-left">
+                    <h2 class="text-2xl font-bold text-slate-900">林書涵</h2>
+                    <p class="text-sm text-slate-600">熱愛心理學與商業理財的終身學習者，歡迎交流推薦好書！</p>
+                    <div class="flex flex-wrap gap-2 justify-center md:justify-start pt-2">
+                        <span class="bg-book-50 text-book-700 text-xs px-3 py-1 rounded-full font-bold">已閱讀 28 本書</span>
+                        <span class="bg-amber-50 text-amber-700 text-xs px-3 py-1 rounded-full font-bold">發表 12 篇心得</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6. Portfolio Showcase Section (作品集展示區塊) -->
+        <section id="portfolio-showcase" class="mt-12 bg-white rounded-3xl p-6 sm:p-8 lg:p-10 shadow-sm border border-slate-200 space-y-8" aria-labelledby="portfolio-title">
+            <div class="text-center max-w-2xl mx-auto space-y-3">
+                <span class="inline-flex items-center gap-2 bg-amber-100 text-amber-800 text-xs font-bold px-3.5 py-1.5 rounded-full uppercase tracking-wider">
+                    <i class="fa-solid fa-film text-amber-600"></i> 精選作品 showcase
+                </span>
+                <h2 id="portfolio-title" class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">作品集展示區塊</h2>
+                <p class="text-slate-600 text-sm sm:text-base">
+                    精選鞋款短影音動態純畫面展示，感受實穿細節與質感設計（自動播放、靜音循環）
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+                
+                <!-- Portfolio Item 1: VOBO皮鞋 -->
+                <div class="bg-slate-50 border border-slate-200 rounded-3xl p-4 shadow-sm hover:shadow-md transition flex flex-col items-center">
+                    <div class="shorts-frame-wrapper w-full relative">
+                        <iframe 
+                            src="https://www.youtube-nocookie.com/embed/h7hM5BlOcMY?autoplay=1&mute=1&loop=1&playlist=h7hM5BlOcMY&controls=0&disablekb=1&fs=0&modestbranding=1&rel=0&iv_load_policy=3&playsinline=1" 
+                            title="VOBO皮鞋" 
+                            frameborder="0" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                            allowfullscreen>
+                        </iframe>
+                        <!-- Pure visual overlay mask to prevent player clicking or social overlay popup -->
+                        <div class="absolute inset-0 z-10 bg-transparent pointer-events-none"></div>
+                    </div>
+                    <div class="mt-4 text-center w-full">
+                        <span class="inline-block px-3 py-1 bg-book-100 text-book-800 text-xs font-bold rounded-full mb-1">精品皮鞋系列</span>
+                        <h3 class="text-lg font-extrabold text-slate-900 tracking-wide mt-1">VOBO皮鞋</h3>
+                    </div>
+                </div>
+
+                <!-- Portfolio Item 2: SHARK 鯊克防水鞋 -->
+                <div class="bg-slate-50 border border-slate-200 rounded-3xl p-4 shadow-sm hover:shadow-md transition flex flex-col items-center">
+                    <div class="shorts-frame-wrapper w-full relative">
+                        <iframe 
+                            src="https://www.youtube-nocookie.com/embed/bcFnNsTVntk?autoplay=1&mute=1&loop=1&playlist=bcFnNsTVntk&controls=0&disablekb=1&fs=0&modestbranding=1&rel=0&iv_load_policy=3&playsinline=1" 
+                            title="SHARK 鯊克防水鞋" 
+                            frameborder="0" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                            allowfullscreen>
+                        </iframe>
+                        <!-- Pure visual overlay mask to prevent player clicking or social overlay popup -->
+                        <div class="absolute inset-0 z-10 bg-transparent pointer-events-none"></div>
+                    </div>
+                    <div class="mt-4 text-center w-full">
+                        <span class="inline-block px-3 py-1 bg-sky-100 text-sky-800 text-xs font-bold rounded-full mb-1">全天候戶外機能</span>
+                        <h3 class="text-lg font-extrabold text-slate-900 tracking-wide mt-1">SHARK 鯊克防水鞋</h3>
+                    </div>
+                </div>
+
+                <!-- Portfolio Item 3: 黑武士鞋 -->
+                <div class="bg-slate-50 border border-slate-200 rounded-3xl p-4 shadow-sm hover:shadow-md transition flex flex-col items-center">
+                    <div class="shorts-frame-wrapper w-full relative">
+                        <iframe 
+                            src="https://www.youtube-nocookie.com/embed/n9VTjZdNvEQ?autoplay=1&mute=1&loop=1&playlist=n9VTjZdNvEQ&controls=0&disablekb=1&fs=0&modestbranding=1&rel=0&iv_load_policy=3&playsinline=1" 
+                            title="黑武士鞋" 
+                            frameborder="0" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                            allowfullscreen>
+                        </iframe>
+                        <!-- Pure visual overlay mask to prevent player clicking or social overlay popup -->
+                        <div class="absolute inset-0 z-10 bg-transparent pointer-events-none"></div>
+                    </div>
+                    <div class="mt-4 text-center w-full">
+                        <span class="inline-block px-3 py-1 bg-slate-200 text-slate-800 text-xs font-bold rounded-full mb-1">極簡潮流工藝</span>
+                        <h3 class="text-lg font-extrabold text-slate-900 tracking-wide mt-1">黑武士鞋</h3>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-900 text-slate-400 py-10 mt-12 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="flex items-center gap-3 text-white font-extrabold text-lg">
+                <div class="w-8 h-8 bg-book-600 rounded-lg flex items-center justify-center">
+                    <i class="fa-solid fa-book-open-reader"></i>
+                </div>
+                <span>書香知音</span>
+            </div>
+            <p class="text-xs text-slate-500 text-center md:text-right">&copy; 2026 書香知音 Reading Club Platform. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- New Post Modal -->
+    <div id="modal-post" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 space-y-4">
+            <div class="flex items-center justify-between border-b pb-3 border-slate-100">
+                <h3 class="text-lg font-bold text-slate-900"><i class="fa-solid fa-pen-to-square text-book-600 mr-2"></i>發表心得貼文</h3>
+                <button onclick="closePostModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <input type="text" id="new-post-title" placeholder="請輸入書名或心得標題..." class="w-full bg-slate-100 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-book-600">
+            <textarea id="new-post-content" rows="4" placeholder="分享這本書帶給你的啟發與想法..." class="w-full bg-slate-100 rounded-xl p-4 text-sm focus:outline-none focus:ring-2 focus:ring-book-600"></textarea>
+            <div class="flex justify-end gap-2">
+                <button onclick="closePostModal()" class="px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200">取消</button>
+                <button onclick="submitPost()" class="px-5 py-2 rounded-xl text-xs font-bold bg-book-600 text-white hover:bg-book-700">發布貼文</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Modal -->
+    <div id="modal-notification" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 space-y-4">
+            <div class="flex items-center justify-between border-b pb-3 border-slate-100">
+                <h3 class="text-lg font-bold text-slate-900"><i class="fa-solid fa-bell text-book-600 mr-2"></i>通知中心</h3>
+                <button onclick="closeNotificationModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <div class="space-y-3 text-sm text-slate-600">
+                <div class="p-3 bg-slate-50 rounded-xl"><strong>陳明德</strong> 讚了你的《被討厭的勇氣》閱讀心得。</div>
+                <div class="p-3 bg-slate-50 rounded-xl"><strong>張雅婷</strong> 在心理學話題區回覆了你的留言。</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const state = {
+            posts: [
+                {
+                    id: 1,
+                    author: "林書涵",
+                    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80",
+                    time: "10分鐘前",
+                    book: "原子習慣",
+                    tag: "自我成長",
+                    content: "每天進步1%，一年後你會進步37倍！這本書告訴我們，決定成就的不是目標，而是複利系統。",
+                    likes: 15,
+                    liked: false
+                },
+                {
+                    id: 2,
+                    author: "張雅婷",
+                    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80",
+                    time: "1小時前",
+                    book: "被討厭的勇氣",
+                    tag: "心理學",
+                    content: "阿德勒心理學的核心概念『課題分離』，讓我在人際關係中卸下了許多不必要的重擔！",
+                    likes: 24,
+                    liked: true
+                },
+                {
+                    id: 3,
+                    author: "陳明德",
+                    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80",
+                    time: "3小時前",
+                    book: "富爸爸，窮爸爸",
+                    tag: "商業理財",
+                    content: "重新思考資產與負債的定義。持續購入能夠帶來現金流的資產，才是邁向財務自由的第一步。",
+                    likes: 19,
+                    liked: false
+                }
+            ],
+            topics: [
+                { title: "#心理學", icon: "fa-brain", color: "bg-purple-600", count: "12 討論" },
+                { title: "#商業理財", icon: "fa-chart-line", color: "bg-emerald-600", count: "18 討論" },
+                { title: "#自我成長", icon: "fa-seedling", color: "bg-amber-600", count: "25 討論" },
+                { title: "#文學小說", icon: "fa-feather", color: "bg-sky-600", count: "9 討論" }
+            ],
+            friends: [
+                { name: "張雅婷", role: "心理學熱愛者", avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80" },
+                { name: "陳明德", role: "商業理財愛好者", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80" },
+                { name: "許家豪", role: "文學書迷", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80" }
+            ],
+            chatMessages: [
+                { sender: "張雅婷", text: "大家最近有讀什麼好書嗎？", time: "14:20", isMe: false },
+                { sender: "林書涵", text: "我剛剛發了《原子習慣》的心得，強烈推薦！", time: "14:22", isMe: true }
+            ],
+            currentTag: "全部"
+        };
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            const targetTab = document.getElementById(`tab-${tabName}`);
+            if (targetTab) targetTab.classList.remove('hidden');
+
+            const navBtns = ['feed', 'topics', 'chat', 'friends', 'profile'];
+            navBtns.forEach(name => {
+                const btn = document.getElementById(`nav-btn-${name}`);
+                if (btn) {
+                    if (name === tabName) {
+                        btn.className = "flex items-center justify-center w-20 h-12 rounded-xl text-book-600 bg-book-50 font-bold text-xl transition hover:bg-book-100";
+                    } else {
+                        btn.className = "flex items-center justify-center w-20 h-12 rounded-xl text-slate-500 font-bold text-xl transition hover:bg-slate-100";
+                    }
+                }
+            });
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            if (menu) menu.classList.toggle('hidden');
+        }
+
+        function renderPosts() {
+            const container = document.getElementById('posts-container');
+            if (!container) return;
+
+            const filtered = state.currentTag === "全部" 
+                ? state.posts 
+                : state.posts.filter(p => p.tag === state.currentTag);
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<div class="p-8 text-center text-slate-500 bg-white rounded-2xl">目前無此標籤的貼文。</div>`;
+                return;
+            }
+
+            container.innerHTML = filtered.map(post => `
+                <article class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <img src="${post.avatar}" class="w-10 h-10 rounded-full object-cover">
+                            <div>
+                                <h4 class="font-bold text-slate-800 text-sm">${post.author}</h4>
+                                <span class="text-xs text-slate-400">${post.time}</span>
+                            </div>
+                        </div>
+                        <span class="text-xs font-bold px-2.5 py-1 bg-book-50 text-book-700 rounded-full">#${post.tag}</span>
+                    </div>
+                    <div class="pt-1">
+                        <span class="text-xs font-extrabold text-amber-700 bg-amber-50 px-2 py-0.5 rounded mr-2">《${post.book}》</span>
+                        <p class="text-slate-700 text-sm mt-2 leading-relaxed">${post.content}</p>
+                    </div>
+                    <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-slate-500 text-xs">
+                        <button onclick="toggleLike(${post.id})" class="flex items-center gap-1.5 ${post.liked ? 'text-red-500 font-bold' : 'hover:text-slate-800'}">
+                            <i class="${post.liked ? 'fa-solid' : 'fa-regular'} fa-heart"></i> ${post.likes} 讚
+                        </button>
+                        <button class="flex items-center gap-1.5 hover:text-slate-800">
+                            <i class="fa-regular fa-comment"></i> 留言討論
+                        </button>
+                    </div>
+                </article>
+            `).join('');
+        }
+
+        function toggleLike(postId) {
+            const post = state.posts.find(p => p.id === postId);
+            if (post) {
+                post.liked = !post.liked;
+                post.likes += post.liked ? 1 : -1;
+                renderPosts();
+            }
+        }
+
+        function filterByTag(tagName) {
+            state.currentTag = tagName;
+            const label = document.getElementById('active-tag-label');
+            if (label) label.innerText = `#${tagName}`;
+            renderPosts();
+        }
+
+        function sortFeed(type) {
+            if (type === 'popular') {
+                state.posts.sort((a, b) => b.likes - a.likes);
+            } else {
+                state.posts.sort((a, b) => b.id - a.id);
+            }
+            renderPosts();
+        }
+
+        function renderTopics() {
+            const grid = document.getElementById('topics-grid');
+            if (!grid) return;
+            grid.innerHTML = state.topics.map(t => `
+                <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex items-center justify-between hover:border-book-600 transition cursor-pointer">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 ${t.color} text-white rounded-xl flex items-center justify-center text-xl shadow">
+                            <i class="fa-solid ${t.icon}"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-slate-800">${t.title}</h3>
+                            <p class="text-xs text-slate-500">${t.count}</p>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-slate-400 text-sm"></i>
+                </div>
+            `).join('');
+        }
+
+        function renderFriends() {
+            const grid = document.getElementById('friends-card-grid');
+            if (!grid) return;
+            grid.innerHTML = state.friends.map(f => `
+                <div class="p-4 border border-slate-200 rounded-2xl flex items-center gap-3 bg-slate-50">
+                    <img src="${f.avatar}" class="w-12 h-12 rounded-full object-cover">
+                    <div class="flex-1">
+                        <h4 class="font-bold text-sm text-slate-800">${f.name}</h4>
+                        <p class="text-xs text-slate-500">${f.role}</p>
+                    </div>
+                    <button class="text-xs bg-book-600 text-white font-bold px-3 py-1.5 rounded-xl hover:bg-book-700">追蹤</button>
+                </div>
+            `).join('');
+        }
+
+        function renderMessages() {
+            const container = document.getElementById('chat-messages-container');
+            if (!container) return;
+            container.innerHTML = state.chatMessages.map(m => `
+                <div class="flex flex-col ${m.isMe ? 'items-end' : 'items-start'}">
+                    <span class="text-[10px] text-slate-400 mb-0.5 px-1">${m.sender} · ${m.time}</span>
+                    <div class="max-w-[80%] ${m.isMe ? 'bg-book-600 text-white rounded-2xl rounded-tr-none' : 'bg-white text-slate-800 rounded-2xl rounded-tl-none border border-slate-200'} p-3 text-sm shadow-sm">
+                        ${m.text}
+                    </div>
+                </div>
+            `).join('');
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chat-input');
+            if (!input || !input.value.trim()) return;
+            state.chatMessages.push({
+                sender: "林書涵",
+                text: input.value.trim(),
+                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                isMe: true
+            });
+            input.value = '';
+            renderMessages();
+        }
+
+        function handleChatKeyPress(e) {
+            if (e.key === 'Enter') sendMessage();
+        }
+
+        function openPostModal() { document.getElementById('modal-post').classList.remove('hidden'); }
+        function closePostModal() { document.getElementById('modal-post').classList.add('hidden'); }
+        function openNotificationModal() { document.getElementById('modal-notification').classList.remove('hidden'); }
+        function closeNotificationModal() { document.getElementById('modal-notification').classList.add('hidden'); }
+
+        function submitPost() {
+            const title = document.getElementById('new-post-title').value;
+            const content = document.getElementById('new-post-content').value;
+            if (!title || !content) return;
+
+            state.posts.unshift({
+                id: Date.now(),
+                author: "林書涵",
+                avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80",
+                time: "剛剛",
+                book: title,
+                tag: "自我成長",
+                content: content,
+                likes: 0,
+                liked: false
+            });
+
+            document.getElementById('new-post-title').value = '';
+            document.getElementById('new-post-content').value = '';
+            closePostModal();
+            renderPosts();
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderPosts();
+            renderTopics();
+            renderFriends();
+            renderMessages();
+        });
+    </script>
+</body>
+</html>
